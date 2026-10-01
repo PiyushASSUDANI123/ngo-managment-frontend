@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import { toast } from 'react-toastify';
 import { HiOutlinePlus, HiOutlineTrash, HiOutlineFilter } from 'react-icons/hi';
@@ -17,6 +17,31 @@ const Points = () => {
   const [formData, setFormData] = useState({
     volunteer: '', category: '', points: '', date: new Date().toISOString().split('T')[0], remarks: ''
   });
+  const [expandedRows, setExpandedRows] = useState({});
+
+  const groupPointsByVolunteer = (pointsList) => {
+    const grouped = pointsList.reduce((acc, point) => {
+      const volId = point.volunteer?._id;
+      if (!volId) return acc;
+      if (!acc[volId]) {
+        acc[volId] = {
+          volunteer: point.volunteer,
+          totalPoints: 0,
+          records: []
+        };
+      }
+      acc[volId].totalPoints += point.points;
+      acc[volId].records.push(point);
+      return acc;
+    }, {});
+    return Object.values(grouped);
+  };
+
+  const groupedPoints = groupPointsByVolunteer(points);
+
+  const toggleRow = (volId) => {
+    setExpandedRows(prev => ({ ...prev, [volId]: !prev[volId] }));
+  };
 
   useEffect(() => {
     fetchData();
@@ -204,22 +229,35 @@ const Points = () => {
               </tr>
             </thead>
             <tbody>
-              {points.map((p) => (
-                <tr key={p._id}>
-                  <td>
-                    <p className="cell-name">{p.volunteer?.name}</p>
-                    <p className="cell-sub">{p.volunteer?.volunteerId}</p>
-                  </td>
-                  <td><span className="badge">{p.category?.name || '-'}</span></td>
-                  <td><span className="points-badge">{p.points}</span></td>
-                  <td>{new Date(p.date).toLocaleDateString('en-IN')}</td>
-                  <td>{p.remarks || '-'}</td>
-                  <td>
-                    <button className="icon-btn delete" onClick={() => handleDelete(p._id)}>
-                      <HiOutlineTrash />
-                    </button>
-                  </td>
-                </tr>
+              {groupedPoints.map((group) => (
+                <React.Fragment key={group.volunteer._id}>
+                  <tr onClick={() => toggleRow(group.volunteer._id)} style={{ cursor: 'pointer', backgroundColor: expandedRows[group.volunteer._id] ? '#f8fafc' : 'transparent', borderBottom: '2px solid #e2e8f0' }}>
+                    <td>
+                      <p className="cell-name">{group.volunteer.name}</p>
+                      <p className="cell-sub">{group.volunteer.volunteerId}</p>
+                    </td>
+                    <td colSpan="5">
+                      <span className="badge" style={{ fontSize: '1rem', padding: '0.4rem 1rem' }}>Total Points: {group.totalPoints}</span>
+                      <span style={{ marginLeft: '10px', fontSize: '0.85rem', color: '#64748b' }}>
+                        (Click to {expandedRows[group.volunteer._id] ? 'collapse' : 'view breakdown'})
+                      </span>
+                    </td>
+                  </tr>
+                  {expandedRows[group.volunteer._id] && group.records.map(p => (
+                    <tr key={p._id} style={{ backgroundColor: '#f1f5f9' }}>
+                      <td style={{ paddingLeft: '3rem', color: '#64748b' }}>↳ Breakdown</td>
+                      <td><span className="badge">{p.category?.name || '-'}</span></td>
+                      <td><span className="points-badge">{p.points}</span></td>
+                      <td>{new Date(p.date).toLocaleDateString('en-IN')}</td>
+                      <td>{p.remarks || '-'}</td>
+                      <td>
+                        <button className="icon-btn delete" onClick={(e) => { e.stopPropagation(); handleDelete(p._id); }}>
+                          <HiOutlineTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
               ))}
             </tbody>
           </table>

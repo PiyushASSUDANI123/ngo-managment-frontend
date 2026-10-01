@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import { toast } from 'react-toastify';
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineSearch, HiOutlineX, HiOutlineKey } from 'react-icons/hi';
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineSearch, HiOutlineX, HiOutlineKey, HiOutlineEye } from 'react-icons/hi';
 import ExportButtons from '../../components/ExportButtons';
 
 const Volunteers = () => {
@@ -102,6 +102,13 @@ const Volunteers = () => {
     } catch (error) {
       toast.error('Failed to reset password');
     }
+  };
+
+  const handleViewCredentials = (vol) => {
+    setShowCredentials({ 
+      volunteerId: vol.volunteerId, 
+      password: 'password123 (Or custom hidden password)'
+    });
   };
 
   const resetForm = () => {
@@ -221,6 +228,9 @@ const Volunteers = () => {
                     <div className="action-btns">
                       <button className="icon-btn edit" onClick={() => handleEdit(vol)} title="Edit">
                         <HiOutlinePencil />
+                      </button>
+                      <button className="icon-btn" onClick={() => handleViewCredentials(vol)} title="View ID & Default Pass" style={{color: '#3b82f6'}}>
+                        <HiOutlineEye />
                       </button>
                       <button className="icon-btn" onClick={() => handleResetPassword(vol)} title="Reset Password" style={{color: '#7c3aed'}}>
                         <HiOutlineKey />
