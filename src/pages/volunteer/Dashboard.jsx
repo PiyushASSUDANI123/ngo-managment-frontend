@@ -91,19 +91,26 @@ const VolunteerDashboard = () => {
         <p>Here's your activity overview</p>
       </div>
 
-      {notifications.length > 0 && (
-        <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {notifications.map(n => (
-            <div key={n._id} style={{ padding: '1rem 1.5rem', background: 'var(--primary)', color: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-              <div style={{ fontSize: '1.5rem', paddingTop: '2px' }}><HiOutlineChatAlt2 /></div>
-              <div>
-                <h4 style={{ margin: 0, fontWeight: 700, fontSize: '1rem' }}>{n.title}</h4>
-                <p style={{ margin: '0.25rem 0 0 0', opacity: 0.9, fontSize: '0.9rem' }}>{n.message}</p>
-              </div>
-            </div>
-          ))}
+      {/* Notice Board */}
+      <div className=dashboard-card style={{ marginBottom: '1.5rem' }}>
+        <div className=card-header style={{ background: 'var(--primary-bg)' }}>
+          <h3 style={{ color: 'var(--primary)' }}>📌 Notice Board & Announcements</h3>
         </div>
-      )}
+        <div className=card-body>
+          {notifications.length === 0 ? (
+            <p className=empty-message>No new announcements from Admin.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {notifications.map(n => (
+                <div key={n._id} style={{ padding: '1rem', background: 'var(--bg-secondary)', borderLeft: '4px solid var(--primary)', borderRadius: '0 var(--radius-md) var(--radius-md) 0' }}>
+                  <h4 style={{ margin: 0, fontWeight: 700, fontSize: '1.05rem', color: 'var(--text)' }}>{n.title}</h4>
+                  <p style={{ margin: '0.5rem 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{n.message}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Profile Card */}
       {profile && (
