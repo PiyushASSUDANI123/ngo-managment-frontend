@@ -76,7 +76,7 @@ const VolunteerProfile = () => {
           onClick={() => setActiveTab('screenshots')}
           style={{ padding: '0.5rem 1rem', borderBottom: activeTab === 'screenshots' ? '2px solid #0f172a' : 'none', background: 'none', cursor: 'pointer', fontWeight: 600 }}
         >
-          Added SSS (Screenshots)
+          Added SS (Screenshots)
         </button>
         <button 
           className={activeTab === 'points' ? 'tab-btn active' : 'tab-btn'}
