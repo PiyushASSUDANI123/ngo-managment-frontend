@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import Fields from './pages/admin/Fields';
 import Volunteers from './pages/admin/Volunteers';
+import VolunteerProfile from './pages/admin/VolunteerProfile';
 import Points from './pages/admin/Points';
 import AdminTasks from './pages/admin/Tasks';
 import AdminAppeals from './pages/admin/Appeals';
@@ -51,6 +52,7 @@ function App() {
             <Route path="fields" element={<Fields />} />
             <Route path="points-categories" element={<AdminPointsCategories />} />
             <Route path="volunteers" element={<Volunteers />} />
+            <Route path="volunteers/:id" element={<VolunteerProfile />} />
             <Route path="points" element={<Points />} />
             <Route path="tasks" element={<AdminTasks />} />
             <Route path="appeals" element={<AdminAppeals />} />

@@ -236,12 +236,19 @@ const Points = () => {
                       <p className="cell-name">{group.volunteer.name}</p>
                       <p className="cell-sub">{group.volunteer.volunteerId}</p>
                     </td>
-                    <td colSpan="5">
-                      <span className="badge" style={{ fontSize: '1rem', padding: '0.4rem 1rem' }}>Total Points: {group.totalPoints}</span>
-                      <span style={{ marginLeft: '10px', fontSize: '0.85rem', color: '#64748b' }}>
+                    <td>
+                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>(All Categories)</span>
+                    </td>
+                    <td>
+                      <span className="points-badge" style={{ fontSize: '1rem', padding: '0.4rem 1rem' }}>{group.totalPoints}</span>
+                    </td>
+                    <td>-</td>
+                    <td>
+                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
                         (Click to {expandedRows[group.volunteer._id] ? 'collapse' : 'view breakdown'})
                       </span>
                     </td>
+                    <td>-</td>
                   </tr>
                   {expandedRows[group.volunteer._id] && group.records.map(p => (
                     <tr key={p._id} style={{ backgroundColor: '#f1f5f9' }}>

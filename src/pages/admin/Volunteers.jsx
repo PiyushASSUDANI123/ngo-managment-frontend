@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import { toast } from 'react-toastify';
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineSearch, HiOutlineX, HiOutlineKey, HiOutlineEye } from 'react-icons/hi';
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineSearch, HiOutlineX, HiOutlineKey, HiOutlineEye, HiOutlineUser } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 import ExportButtons from '../../components/ExportButtons';
 
 const Volunteers = () => {
@@ -226,6 +227,9 @@ const Volunteers = () => {
                   </td>
                   <td>
                     <div className="action-btns">
+                      <Link to={`/admin/volunteers/${vol._id}`} className="icon-btn" title="View Full Profile" style={{color: '#0ea5e9'}}>
+                        <HiOutlineUser />
+                      </Link>
                       <button className="icon-btn edit" onClick={() => handleEdit(vol)} title="Edit">
                         <HiOutlinePencil />
                       </button>
