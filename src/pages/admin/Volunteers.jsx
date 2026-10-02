@@ -108,7 +108,7 @@ const Volunteers = () => {
   const handleViewCredentials = (vol) => {
     setShowCredentials({ 
       volunteerId: vol.volunteerId, 
-      password: 'password123 (Or custom hidden password)'
+      password: vol.plainPassword || '(Old Encrypted Password - Please Reset)'
     });
   };
 
