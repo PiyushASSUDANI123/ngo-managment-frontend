@@ -108,7 +108,7 @@ const MyPoints = () => {
               {points.map((p) => (
                 <tr key={p._id}>
                   <td>{new Date(p.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
-                  <td><span className="badge">{p.field?.name}</span></td>
+                  <td><span className="badge badge-primary" style={{textTransform: 'capitalize'}}>{p.category?.name || 'Task'}</span></td>
                   <td><span className="points-badge">{p.points}</span></td>
                   <td>{p.remarks || '-'}</td>
                 </tr>

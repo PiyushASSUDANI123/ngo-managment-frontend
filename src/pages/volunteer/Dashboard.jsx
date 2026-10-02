@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
-import { HiOutlineStar, HiOutlineClipboardList, HiOutlineChatAlt2, HiOutlineUser } from 'react-icons/hi';
+import { HiOutlineStar, HiOutlineClipboardList, HiOutlineChatAlt2, HiOutlineUser, HiOutlinePencil, HiOutlineX } from 'react-icons/hi';
+import { toast } from 'react-toastify';
 
 const VolunteerDashboard = () => {
   const { user } = useAuth();
@@ -12,6 +13,12 @@ const VolunteerDashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileFormData, setProfileFormData] = useState({
+    mobile: '', email: '', address: '', city: '', state: ''
+  });
+  const [profilePhotoFile, setProfilePhotoFile] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -44,6 +51,36 @@ const VolunteerDashboard = () => {
     return <div className="page-loader"><div className="loading-spinner"></div></div>;
   }
 
+  const handleEditProfile = () => {
+    setProfileFormData({
+      mobile: profile.mobile || '',
+      email: profile.email || '',
+      address: profile.address || '',
+      city: profile.city || '',
+      state: profile.state || ''
+    });
+    setProfilePhotoFile(null);
+    setShowProfileModal(true);
+  };
+
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData();
+    Object.keys(profileFormData).forEach(key => fd.append(key, profileFormData[key]));
+    if (profilePhotoFile) fd.append('photo', profilePhotoFile);
+
+    try {
+      const res = await API.put('/volunteers/profile/me', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setProfile(res.data);
+      setShowProfileModal(false);
+      toast.success('Profile updated successfully');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update profile');
+    }
+  };
+
   const pendingTasks = tasks.filter(t => t.status === 'pending').length;
   const completedTasks = tasks.filter(t => t.status === 'completed').length;
 
@@ -72,13 +109,20 @@ const VolunteerDashboard = () => {
       {profile && (
         <div className="volunteer-profile-card">
           <div className="profile-avatar-section">
-            {profile.photo ? (
-              <img src={profile.photo} alt={profile.name} className="profile-avatar-img" />
-            ) : (
-              <div className="profile-avatar-placeholder">{profile.name.charAt(0)}</div>
-            )}
-            <div className="profile-details">
-              <h3>{profile.name}</h3>
+            <div style={{ position: 'relative' }}>
+              {profile.photo ? (
+                <img src={profile.photo.startsWith('http') ? profile.photo : `https://envision.piyushassudani.in${profile.photo}`} alt={profile.name} className="profile-avatar-img" />
+              ) : (
+                <div className="profile-avatar-placeholder">{profile.name.charAt(0)}</div>
+              )}
+            </div>
+            <div className="profile-details" style={{ flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3>{profile.name}</h3>
+                <button onClick={handleEditProfile} className="btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>
+                  <HiOutlinePencil /> Edit Profile
+                </button>
+              </div>
               <span className="badge">{profile.volunteerId}</span>
               <p>{profile.field?.name}</p>
             </div>
@@ -202,6 +246,50 @@ const VolunteerDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showProfileModal && (
+        <div className="modal-overlay" onClick={() => setShowProfileModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Edit Profile</h3>
+              <button className="icon-btn" onClick={() => setShowProfileModal(false)}><HiOutlineX /></button>
+            </div>
+            <form onSubmit={handleProfileSubmit}>
+              <div className="form-group">
+                <label>Profile Photo</label>
+                <input type="file" accept="image/*" onChange={(e) => setProfilePhotoFile(e.target.files[0])} />
+              </div>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Mobile Number</label>
+                  <input type="text" value={profileFormData.mobile} onChange={e => setProfileFormData({...profileFormData, mobile: e.target.value})} required />
+                </div>
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input type="email" value={profileFormData.email} onChange={e => setProfileFormData({...profileFormData, email: e.target.value})} />
+                </div>
+                <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                  <label>Address</label>
+                  <input type="text" value={profileFormData.address} onChange={e => setProfileFormData({...profileFormData, address: e.target.value})} />
+                </div>
+                <div className="form-group">
+                  <label>City</label>
+                  <input type="text" value={profileFormData.city} onChange={e => setProfileFormData({...profileFormData, city: e.target.value})} />
+                </div>
+                <div className="form-group">
+                  <label>State</label>
+                  <input type="text" value={profileFormData.state} onChange={e => setProfileFormData({...profileFormData, state: e.target.value})} />
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowProfileModal(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

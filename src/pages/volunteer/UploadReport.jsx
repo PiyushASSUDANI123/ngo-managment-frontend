@@ -68,6 +68,17 @@ const UploadReport = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this report?')) return;
+    try {
+      await axios.delete(`/reports/${id}`);
+      toast.success('Report deleted successfully');
+      fetchMyReports();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete report');
+    }
+  };
+
   return (
     <div className="dashboard-content">
       <div className="page-header">
@@ -143,6 +154,7 @@ const UploadReport = () => {
                     <th>Status</th>
                     <th>Points</th>
                     <th>Proofs</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -158,11 +170,11 @@ const UploadReport = () => {
                       </td>
                       <td>{report.pointsAwarded || 0}</td>
                       <td>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                           {report.screenshots.map((ss, idx) => (
                             <a 
                               key={idx} 
-                              href={`https://envision.piyushassudani.in${ss}`} 
+                              href={ss.startsWith('http') ? ss : `https://envision.piyushassudani.in${ss}`}
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="btn-outline"
@@ -172,6 +184,16 @@ const UploadReport = () => {
                             </a>
                           ))}
                         </div>
+                      </td>
+                      <td>
+                        {report.status === 'pending' && (
+                          <button 
+                            onClick={() => handleDelete(report._id)} 
+                            style={{ background: '#ef4444', color: 'white', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
+                          >
+                            Delete
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

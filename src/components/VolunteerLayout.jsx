@@ -10,11 +10,22 @@ const VolunteerLayout = () => {
     <div className="layout">
       <VolunteerSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main className="main-content">
-        <header className="topbar">
-          <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
-            <HiOutlineMenuAlt2 />
+        <header className="topbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button className="menu-toggle" onClick={() => setSidebarOpen(true)}>
+              <HiOutlineMenuAlt2 />
+            </button>
+            <h1 className="page-title">Volunteer Dashboard</h1>
+          </div>
+          <button 
+            onClick={() => {
+              localStorage.removeItem('ngo_user');
+              window.location.href = '/login';
+            }} 
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#EF4444', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Logout
           </button>
-          <h1 className="page-title">Volunteer Dashboard</h1>
         </header>
         <div className="content-area" style={{ flex: 1 }}>
           <Outlet />

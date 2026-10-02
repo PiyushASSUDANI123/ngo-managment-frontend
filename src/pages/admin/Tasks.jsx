@@ -12,7 +12,7 @@ const Tasks = () => {
   const [filterVolunteer, setFilterVolunteer] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [formData, setFormData] = useState({
-    volunteer: '', title: '', description: '', dueDate: '', status: 'pending'
+    volunteer: '', title: '', description: '', dueDate: '', status: 'pending', notes: ''
   });
 
   useEffect(() => {
@@ -60,7 +60,8 @@ const Tasks = () => {
       title: task.title,
       description: task.description || '',
       dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
-      status: task.status
+      status: task.status,
+      notes: task.notes || ''
     });
     setShowModal(true);
   };
@@ -77,7 +78,7 @@ const Tasks = () => {
   };
 
   const resetForm = () => {
-    setFormData({ volunteer: '', title: '', description: '', dueDate: '', status: 'pending' });
+    setFormData({ volunteer: '', title: '', description: '', dueDate: '', status: 'pending', notes: '' });
   };
 
   const filteredTasks = tasks.filter((t) => {
@@ -147,7 +148,12 @@ const Tasks = () => {
               </div>
               <h4 className="task-title">{task.title}</h4>
               {task.description && <p className="task-desc">{task.description}</p>}
-              <div className="task-meta">
+              {task.notes && (
+                <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem', borderRadius: '4px', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <strong>Notes:</strong> {task.notes}
+                </div>
+              )}
+              <div className="task-meta" style={{ marginTop: '0.5rem' }}>
                 <span className="task-assignee">👤 {task.volunteer?.name} ({task.volunteer?.volunteerId})</span>
                 {task.dueDate && (
                   <span className="task-due">📅 {new Date(task.dueDate).toLocaleDateString('en-IN')}</span>
@@ -171,6 +177,7 @@ const Tasks = () => {
                 <select value={formData.volunteer}
                   onChange={(e) => setFormData({ ...formData, volunteer: e.target.value })} required>
                   <option value="">Select Volunteer</option>
+                  {!editingTask && <option value="all" style={{ fontWeight: 'bold' }}>📋 Assign to All Active Volunteers</option>}
                   {volunteers.map((v) => (
                     <option key={v._id} value={v._id}>{v.name} ({v.volunteerId})</option>
                   ))}
@@ -185,6 +192,11 @@ const Tasks = () => {
                 <label>Description</label>
                 <textarea placeholder="Task description..." value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} />
+              </div>
+              <div className="form-group">
+                <label>Extra Notes (Optional)</label>
+                <textarea placeholder="Any additional notes or instructions..." value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={2} />
               </div>
               <div className="form-row">
                 <div className="form-group">

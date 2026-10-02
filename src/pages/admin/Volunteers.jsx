@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import API from '../../api/axios';
 import { toast } from 'react-toastify';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineSearch, HiOutlineX, HiOutlineKey, HiOutlineEye, HiOutlineUser } from 'react-icons/hi';
@@ -13,6 +14,7 @@ const Volunteers = () => {
   const [showCredentials, setShowCredentials] = useState(null);
   const [editingVolunteer, setEditingVolunteer] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const cardRef = useRef(null);
   const [filterField, setFilterField] = useState('');
   const [formData, setFormData] = useState({
     name: '', email: '', mobile: '', address: '', city: '', state: '', field: ''
@@ -57,7 +59,11 @@ const Volunteers = () => {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Volunteer created');
-        setShowCredentials(data.credentials);
+        setShowCredentials({
+          ...data.credentials,
+          name: data.volunteer.name,
+          field: data.volunteer.field?.name || 'Volunteer'
+        });
       }
       setShowModal(false);
       setEditingVolunteer(null);
@@ -99,7 +105,12 @@ const Volunteers = () => {
     try {
       const { data } = await API.put(`/volunteers/${vol._id}/reset-password`, {});
       toast.success(`Password reset! New password: ${data.newPassword}`);
-      setShowCredentials({ volunteerId: vol.volunteerId, password: data.newPassword });
+      setShowCredentials({ 
+        volunteerId: vol.volunteerId, 
+        password: data.newPassword,
+        name: vol.name,
+        field: vol.field?.name || 'Volunteer'
+      });
     } catch (error) {
       toast.error('Failed to reset password');
     }
@@ -108,7 +119,9 @@ const Volunteers = () => {
   const handleViewCredentials = (vol) => {
     setShowCredentials({ 
       volunteerId: vol.volunteerId, 
-      password: vol.plainPassword || '(Old Encrypted Password - Please Reset)'
+      password: vol.plainPassword || '(Old Encrypted Password - Please Reset)',
+      name: vol.name,
+      field: vol.field?.name || 'Volunteer'
     });
   };
 
@@ -331,18 +344,68 @@ const Volunteers = () => {
               <button className="icon-btn" onClick={() => setShowCredentials(null)}><HiOutlineX /></button>
             </div>
             <div className="credentials-display">
-              <p>Please share these credentials with the volunteer:</p>
-              <div className="credential-item">
-                <span className="credential-label">Volunteer ID:</span>
-                <span className="credential-value">{showCredentials.volunteerId}</span>
-              </div>
-              <div className="credential-item">
-                <span className="credential-label">Password:</span>
-                <span className="credential-value">{showCredentials.password}</span>
+              {/* This is the printable ID Card */}
+              <div 
+                ref={cardRef} 
+                style={{
+                  background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                  padding: '1.5rem',
+                  borderRadius: '12px',
+                  color: '#1e293b',
+                  marginBottom: '1rem',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  border: '1px solid #cbd5e1'
+                }}
+              >
+                {/* Background pattern */}
+                <div style={{ position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', background: 'radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, transparent 60%)', pointerEvents: 'none' }}></div>
+                
+                <h4 style={{ margin: '0 0 1rem 0', color: '#0369a1', fontSize: '1.2rem', textAlign: 'center', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '0.5rem', fontWeight: 'bold' }}>
+                  EnVision NGO
+                </h4>
+                
+                <div style={{ display: 'grid', gap: '0.6rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#475569', fontSize: '0.85rem' }}>Name</span>
+                    <span style={{ fontWeight: '700' }}>{showCredentials.name}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#475569', fontSize: '0.85rem' }}>Field</span>
+                    <span style={{ fontWeight: '600', color: '#0284c7' }}>{showCredentials.field}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(0,0,0,0.1)' }}>
+                    <span style={{ color: '#475569', fontSize: '0.85rem' }}>Volunteer ID</span>
+                    <span style={{ fontWeight: '700', letterSpacing: '0.5px' }}>{showCredentials.volunteerId}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: '#475569', fontSize: '0.85rem' }}>Password</span>
+                    <span style={{ fontFamily: 'monospace', background: 'rgba(0,0,0,0.05)', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold' }}>{showCredentials.password}</span>
+                  </div>
+                </div>
+                
+                <div style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.75rem', color: '#ef4444', fontWeight: '600' }}>
+                  ⚠️ Please change your password ASAP after login.
+                </div>
               </div>
               <p className="credential-note">⚠️ Please save these credentials. The password cannot be viewed again.</p>
             </div>
-            <div className="modal-actions">
+            <div className="modal-actions" style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button 
+                className="btn btn-secondary" 
+                onClick={async () => {
+                  if (cardRef.current) {
+                    const canvas = await html2canvas(cardRef.current, { scale: 3, backgroundColor: null });
+                    const link = document.createElement('a');
+                    link.download = `EnVision-ID-${showCredentials.volunteerId}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                  }
+                }}
+              >
+                Download Card
+              </button>
               <button className="btn btn-primary" onClick={() => setShowCredentials(null)}>Got it!</button>
             </div>
           </div>

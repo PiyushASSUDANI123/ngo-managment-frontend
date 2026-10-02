@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://envision.piyushassudani.in/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://envision.piyushassudani.in/api',
   headers: {
     'Content-Type': 'application/json'
   }

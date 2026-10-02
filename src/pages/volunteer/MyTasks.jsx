@@ -85,6 +85,11 @@ const MyTasks = () => {
               </div>
               <h4 className="task-title">{task.title}</h4>
               {task.description && <p className="task-desc">{task.description}</p>}
+              {task.notes && (
+                <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem', borderRadius: '4px', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  <strong>Notes:</strong> {task.notes}
+                </div>
+              )}
               {task.dueDate && (
                 <p className="task-due">📅 Due: {new Date(task.dueDate).toLocaleDateString('en-IN')}</p>
               )}

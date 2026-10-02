@@ -188,14 +188,36 @@ const Meetings = () => {
                         </td>
                         <td>{record.volunteer.field?.name || 'N/A'}</td>
                         <td style={{ textAlign: 'center' }}>
-                          <select 
-                            value={record.status} 
-                            onChange={(e) => handleAttendanceChange(record.volunteer._id, e.target.value)}
-                            style={{ padding: '0.3rem', borderRadius: '4px', border: '1px solid var(--border)', background: record.status === 'Present' ? '#d1fae5' : '#fee2e2', color: record.status === 'Present' ? '#065f46' : '#991b1b', fontWeight: 'bold' }}
-                          >
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                          </select>
+                          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleAttendanceChange(record.volunteer._id, 'Present')}
+                              style={{
+                                width: '32px', height: '32px', borderRadius: '50%', border: 'none',
+                                background: record.status === 'Present' ? '#10b981' : '#e5e7eb',
+                                color: record.status === 'Present' ? '#fff' : '#6b7280',
+                                fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.2s'
+                              }}
+                              title="Mark Present"
+                            >
+                              P
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleAttendanceChange(record.volunteer._id, 'Absent')}
+                              style={{
+                                width: '32px', height: '32px', borderRadius: '50%', border: 'none',
+                                background: record.status === 'Absent' ? '#ef4444' : '#e5e7eb',
+                                color: record.status === 'Absent' ? '#fff' : '#6b7280',
+                                fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                transition: 'all 0.2s'
+                              }}
+                              title="Mark Absent"
+                            >
+                              A
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
