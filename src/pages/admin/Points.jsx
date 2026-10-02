@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import { toast } from 'react-toastify';
-import { HiOutlinePlus, HiOutlineTrash, HiOutlineFilter } from 'react-icons/hi';
+import { HiOutlinePlus, HiOutlineTrash, HiOutlineFilter, HiOutlineUser } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 import ExportButtons from '../../components/ExportButtons';
 
 const Points = () => {
@@ -248,7 +249,11 @@ const Points = () => {
                         (Click to {expandedRows[group.volunteer._id] ? 'collapse' : 'view breakdown'})
                       </span>
                     </td>
-                    <td>-</td>
+                    <td>
+                      <Link to={`/admin/volunteers/${group.volunteer._id}`} onClick={(e) => e.stopPropagation()} className="icon-btn" title="View Full Profile" style={{color: '#0ea5e9'}}>
+                        <HiOutlineUser />
+                      </Link>
+                    </td>
                   </tr>
                   {expandedRows[group.volunteer._id] && group.records.map(p => (
                     <tr key={p._id} style={{ backgroundColor: '#f1f5f9' }}>
