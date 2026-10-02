@@ -92,7 +92,7 @@ const VolunteerDashboard = () => {
       </div>
 
       {/* Notice Board */}
-      <div className=dashboard-card style={{ marginBottom: '1.5rem' }}>
+      <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
         <div className=card-header style={{ background: 'var(--primary-bg)' }}>
           <h3 style={{ color: 'var(--primary)' }}>📌 Notice Board & Announcements</h3>
         </div>

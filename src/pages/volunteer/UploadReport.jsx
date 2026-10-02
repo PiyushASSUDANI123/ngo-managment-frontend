@@ -81,6 +81,13 @@ const UploadReport = () => {
 
   return (
     <div className="dashboard-content">
+      
+      {uploading && (
+        <div className="overlay-loader" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(255,255,255,0.7)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+          <div className="loading-spinner"></div>
+          <p style={{ marginTop: '1rem', fontWeight: 'bold', color: 'var(--primary)' }}>Processing...</p>
+        </div>
+      )}
       <div className="page-header">
         <h2>Daily Promotion Reports</h2>
         <p>Upload your daily group promotion screenshots here</p>
@@ -95,7 +102,7 @@ const UploadReport = () => {
               <label>Program / Task Type *</label>
               <select value={category} onChange={(e) => setCategory(e.target.value)} required>
                 {categories.map(c => (
-                  <option key={c._id} value={c._id}>{c.name} ({c.defaultPoints} pts)</option>
+                  <option key={c._id} value={c._id}>{c.name}</option>
                 ))}
               </select>
             </div>
