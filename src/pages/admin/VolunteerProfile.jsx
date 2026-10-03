@@ -22,7 +22,7 @@ const VolunteerProfile = () => {
     try {
       const [volRes, repRes, ptsRes] = await Promise.all([
         API.get(`/volunteers/${id}`),
-        API.get(`/reports?volunteer=${id}`),
+        API.get(`/reports?volunteerId=${id}`),
         API.get(`/points?volunteer=${id}`)
       ]);
       setVolunteer(volRes.data);
