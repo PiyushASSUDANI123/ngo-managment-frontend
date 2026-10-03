@@ -17,7 +17,27 @@ const FormBuilderTab = () => {
       const res = await API.get('/website/volunteer-config');
       setConfig(res.data);
     } catch (err) {
-      toast.error('Failed to load form config');
+      toast.error('Failed to load form config from server. Using default.');
+      setConfig({
+        title: '🚨✨ WE’RE RECRUITING VOLUNTEERS! ✨🚨',
+        subtitle: 'Hey everyone! 💌🌷\nWant to be a part of something meaningful and create a real impact? 💫',
+        visionTitle: '🌸 EnVision Foundation 🌸',
+        visionText: 'is a youth-led initiative working towards empowering underprivileged children through:',
+        visionPoints: ['📚 Equal access to education & opportunities', '🎨 Platforms to express creativity & imagination', '🤝 Mentoring, guidance & support'],
+        footerText: '📍 We’re especially looking for ACTIVE NCR TEAM MEMBERS! 🚨\n\nWhether you have ideas, skills, creativity, energy, or simply the willingness to make a difference — there’s a place for you here! 🫶🏻🌸',
+        formFields: [
+          { name: 'name', label: 'Full Name', type: 'text', required: true, placeholder: 'Enter your name' },
+          { name: 'email', label: 'Email Address', type: 'email', required: true, placeholder: 'your@email.com' },
+          { name: 'contact', label: 'Contact', type: 'tel', required: true, placeholder: 'Phone number' },
+          { name: 'className', label: 'Class/Year', type: 'text', required: true, placeholder: 'e.g. B.Tech 1st Year' },
+          { name: 'school', label: 'Institution', type: 'text', required: true, placeholder: 'School/College Name' },
+          { name: 'location', label: 'Location (City, State)', type: 'text', required: true, placeholder: 'Where are you from?' },
+          { name: 'department', label: 'Preferred Department', type: 'radio', required: true, options: ['Social Media', 'Writing', 'HR', 'Event Planning', 'Finance and marketing', 'Outreach'] },
+          { name: 'reason', label: 'Why do you want to join EnVision?', type: 'textarea', required: true, placeholder: 'Tell us your motivation...' },
+          { name: 'experienceLink', label: 'Past Experience / Resume Link', type: 'url', required: false, placeholder: 'Link to Drive/LinkedIn/Portfolio' },
+          { name: 'reference', label: 'Reference Name (Optional)', type: 'text', required: false, placeholder: 'Who referred you?' }
+        ]
+      });
     } finally {
       setLoading(false);
     }

@@ -291,17 +291,21 @@ const WebsiteManagement = () => {
               <h3>Application Details</h3>
               <button className="close-btn" onClick={() => { setViewModalOpen(false); setSelectedApp(null); }}>&times;</button>
             </div>
-            <div className="modal-body" style={{ display: 'grid', gap: '1rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="modal-body" style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 {Object.entries(selectedApp).map(([key, value]) => {
                   if (['_id', 'createdAt', 'updatedAt', '__v', 'status'].includes(key) || !value) return null;
+                  
+                  const isLongText = key === 'reason' || typeof value === 'string' && value.length > 50;
+                  const formattedKey = key.replace(/([A-Z])/g, ' $1').trim();
+                  
                   return (
-                    <div key={key}>
-                      <strong style={{ textTransform: 'capitalize' }}>{key.replace(/([A-Z])/g, ' $1')}:</strong> 
+                    <div key={key} style={{ gridColumn: isLongText ? '1 / -1' : 'auto', background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <strong style={{ display: 'block', textTransform: 'capitalize', fontSize: '0.85rem', color: '#64748b', marginBottom: '0.4rem' }}>{formattedKey}</strong> 
                       {typeof value === 'string' && value.startsWith('http') ? (
-                        <p><a href={value} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>View Link</a></p>
+                        <a href={value} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '500', textDecoration: 'none' }}>Open Link &rarr;</a>
                       ) : (
-                        <p>{value}</p>
+                        <div style={{ color: '#0f172a', fontSize: '0.95rem', lineHeight: '1.5', wordBreak: 'break-word' }}>{value}</div>
                       )}
                     </div>
                   );
