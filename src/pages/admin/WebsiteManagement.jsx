@@ -286,7 +286,7 @@ const WebsiteManagement = () => {
       {/* View Application Modal */}
       {viewModalOpen && selectedApp && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '600px' }}>
+          <div className="modal" style={{ maxWidth: '600px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Application Details</h3>
               <button className="close-btn" onClick={() => { setViewModalOpen(false); setSelectedApp(null); }}>&times;</button>
@@ -319,7 +319,7 @@ const WebsiteManagement = () => {
       {/* Upload Gallery Modal */}
       {uploadModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '500px' }}>
+          <div className="modal" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Upload Gallery Image</h3>
               <button className="close-btn" onClick={() => setUploadModalOpen(false)}>&times;</button>

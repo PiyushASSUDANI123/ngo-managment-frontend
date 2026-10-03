@@ -147,7 +147,7 @@ const Meetings = () => {
 
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '700px' }}>
+          <div className="modal" style={{ maxWidth: '700px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Record Meeting Attendance</h3>
               <button className="close-btn" onClick={() => setShowModal(false)}>&times;</button>
