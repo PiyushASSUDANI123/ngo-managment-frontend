@@ -3,6 +3,7 @@ import API from '../../api/axios';
 import { HiOutlineCheck, HiOutlineX, HiOutlineEye, HiOutlineTrash } from 'react-icons/hi';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../../utils/config';
+import FormBuilderTab from './components/FormBuilderTab';
 
 const WebsiteManagement = () => {
   const [activeTab, setActiveTab] = useState('applications');
@@ -129,6 +130,12 @@ const WebsiteManagement = () => {
           onClick={() => setActiveTab('applications')}
         >
           Volunteer Applications
+        </button>
+        <button 
+          className={`btn ${activeTab === 'pageConfig' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('pageConfig')}
+        >
+          Volunteer Page Config
         </button>
         <button 
           className={`btn ${activeTab === 'reviews' ? 'btn-primary' : 'btn-secondary'}`}
@@ -271,6 +278,8 @@ const WebsiteManagement = () => {
               )) : <p>No images found in gallery.</p>}
             </div>
           </div>
+        ) : activeTab === 'pageConfig' ? (
+          <FormBuilderTab />
         ) : null}
       </div>
 
@@ -284,25 +293,19 @@ const WebsiteManagement = () => {
             </div>
             <div className="modal-body" style={{ display: 'grid', gap: '1rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div><strong>Name:</strong> <p>{selectedApp.name}</p></div>
-                <div><strong>Department:</strong> <p>{selectedApp.department}</p></div>
-                <div><strong>Class:</strong> <p>{selectedApp.className || selectedApp.class}</p></div>
-                <div><strong>School/College:</strong> <p>{selectedApp.school}</p></div>
-                <div><strong>Location:</strong> <p>{selectedApp.location}</p></div>
-                <div><strong>Contact:</strong> <p>{selectedApp.contact}</p></div>
-              </div>
-              <hr style={{ border: 'none', borderTop: '1px solid #eee' }} />
-              <div>
-                <strong>Why they want to join:</strong>
-                <p style={{ background: '#f8f9fa', padding: '10px', borderRadius: '5px', marginTop: '5px' }}>{selectedApp.reason}</p>
-              </div>
-              <div>
-                <strong>Past Experience/Resume:</strong>
-                <p>{selectedApp.experienceLink || selectedApp.experience ? <a href={selectedApp.experienceLink || selectedApp.experience} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>View Link</a> : 'Not provided'}</p>
-              </div>
-              <div>
-                <strong>Reference:</strong>
-                <p>{selectedApp.reference || 'None'}</p>
+                {Object.entries(selectedApp).map(([key, value]) => {
+                  if (['_id', 'createdAt', 'updatedAt', '__v', 'status'].includes(key) || !value) return null;
+                  return (
+                    <div key={key}>
+                      <strong style={{ textTransform: 'capitalize' }}>{key.replace(/([A-Z])/g, ' $1')}:</strong> 
+                      {typeof value === 'string' && value.startsWith('http') ? (
+                        <p><a href={value} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>View Link</a></p>
+                      ) : (
+                        <p>{value}</p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
