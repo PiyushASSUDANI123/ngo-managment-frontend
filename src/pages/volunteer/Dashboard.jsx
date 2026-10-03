@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import API from '../../api/axios';
 import { HiOutlineStar, HiOutlineClipboardList, HiOutlineChatAlt2, HiOutlineUser, HiOutlinePencil, HiOutlineX } from 'react-icons/hi';
 import { toast } from 'react-toastify';
+import { BASE_URL } from '../../utils/config';
 
 const VolunteerDashboard = () => {
   const { user } = useAuth();
@@ -93,12 +94,12 @@ const VolunteerDashboard = () => {
 
       {/* Notice Board */}
       <div className="dashboard-card" style={{ marginBottom: '1.5rem' }}>
-        <div className=card-header style={{ background: 'var(--primary-bg)' }}>
+        <div className="card-header" style={{ background: 'var(--primary-bg)' }}>
           <h3 style={{ color: 'var(--primary)' }}>📌 Notice Board & Announcements</h3>
         </div>
-        <div className=card-body>
+        <div className="card-body">
           {notifications.length === 0 ? (
-            <p className=empty-message>No new announcements from Admin.</p>
+            <p className="empty-message">No new announcements from Admin.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {notifications.map(n => (
@@ -118,7 +119,7 @@ const VolunteerDashboard = () => {
           <div className="profile-avatar-section">
             <div style={{ position: 'relative' }}>
               {profile.photo ? (
-                <img src={profile.photo.startsWith('http') ? profile.photo : `https://envision.piyushassudani.in${profile.photo}`} alt={profile.name} className="profile-avatar-img" />
+                <img src={profile.photo.startsWith('http') ? profile.photo : `${BASE_URL}${profile.photo}`} alt={profile.name} className="profile-avatar-img" />
               ) : (
                 <div className="profile-avatar-placeholder">{profile.name.charAt(0)}</div>
               )}

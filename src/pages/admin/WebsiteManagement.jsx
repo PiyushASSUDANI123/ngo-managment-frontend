@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import { HiOutlineCheck, HiOutlineX, HiOutlineEye, HiOutlineTrash } from 'react-icons/hi';
 import { toast } from 'react-toastify';
+import { BASE_URL } from '../../utils/config';
 
 const WebsiteManagement = () => {
   const [activeTab, setActiveTab] = useState('applications');
@@ -248,7 +249,7 @@ const WebsiteManagement = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
               {galleryImages.length > 0 ? galleryImages.map(img => (
                 <div key={img._id} style={{ border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden', background: '#fff' }}>
-                  <img src={`https://envision.piyushassudani.in${img.imageUrl}`} alt={img.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
+                  <img src={`${BASE_URL}${img.imageUrl}`} alt={img.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
                   <div style={{ padding: '1rem' }}>
                     <h4 style={{ margin: '0 0 0.5rem' }}>{img.title}</h4>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>{img.category}</p>

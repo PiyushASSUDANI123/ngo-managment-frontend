@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
 import { toast } from 'react-toastify';
 import ExportButtons from '../../components/ExportButtons';
+import { BASE_URL } from '../../utils/config';
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
@@ -111,12 +112,10 @@ const Reports = () => {
                         {report.screenshots.map((ss, idx) => (
                           <a 
                             key={idx} 
-                            href={`https://envision.piyushassudani.in${ss}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
+                            href={`${BASE_URL}${ss}`} 
                           >
                             <img 
-                              src={`https://envision.piyushassudani.in${ss}`} 
+                              src={`${BASE_URL}${ss}`} 
                               alt="Proof" 
                               style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ddd' }} 
                             />

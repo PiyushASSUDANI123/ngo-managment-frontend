@@ -21,6 +21,7 @@ import AdminPointsCategories from './pages/admin/PointsCategories';
 import AdminMeetings from './pages/admin/Meetings';
 import CertificatePreview from './pages/admin/CertificatePreview';
 import WebsiteManagement from './pages/admin/WebsiteManagement';
+import Shoutouts from './pages/admin/Shoutouts';
 
 import VolunteerDashboard from './pages/volunteer/Dashboard';
 import MyTasks from './pages/volunteer/MyTasks';
@@ -63,6 +64,7 @@ function App() {
             <Route path="meetings" element={<AdminMeetings />} />
             <Route path="certificate" element={<CertificatePreview />} />
             <Route path="website" element={<WebsiteManagement />} />
+            <Route path="shoutouts" element={<Shoutouts />} />
           </Route>
 
           {/* Volunteer Routes */}

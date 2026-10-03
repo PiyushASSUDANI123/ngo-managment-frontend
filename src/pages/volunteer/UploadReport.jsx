@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
 import { toast } from 'react-toastify';
+import { BASE_URL } from '../../utils/config';
 
 const UploadReport = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [viewImage, setViewImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
@@ -155,44 +157,46 @@ const UploadReport = () => {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Date</th>
-                    <th>Type</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Date</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Type</th>
                     <th>Description</th>
-                    <th>Status</th>
-                    <th>Points</th>
-                    <th>Proofs</th>
-                    <th>Actions</th>
+                    <th style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>Status</th>
+                    <th style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>Points</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Proofs</th>
+                    <th style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {reports.map(report => (
                     <tr key={report._id}>
-                      <td>{new Date(report.createdAt).toLocaleDateString()}</td>
-                      <td style={{ textTransform: 'capitalize' }}>{report.category?.name || 'Unknown'}</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>{new Date(report.createdAt).toLocaleDateString()}</td>
+                      <td style={{ textTransform: 'capitalize', whiteSpace: 'nowrap' }}>{report.category?.name || 'Unknown'}</td>
                       <td>{report.description}</td>
-                      <td>
-                        <span className={`badge ${report.status === 'approved' ? 'badge-success' : report.status === 'rejected' ? 'badge-error' : 'badge-warning'}`}>
+                      <td style={{ textAlign: 'center' }}>
+                        <span className={`badge ${report.status === 'approved' ? 'badge-success' : report.status === 'rejected' ? 'badge-error' : 'badge-warning'}`} style={{ whiteSpace: 'nowrap' }}>
                           {report.status}
                         </span>
                       </td>
-                      <td>{report.pointsAwarded || 0}</td>
+                      <td style={{ textAlign: 'center' }}>{report.pointsAwarded || 0}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                          {report.screenshots.map((ss, idx) => (
-                            <a 
-                              key={idx} 
-                              href={ss.startsWith('http') ? ss : `https://envision.piyushassudani.in${ss}`}
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="btn-outline"
-                              style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
-                            >
-                              View {idx + 1}
-                            </a>
-                          ))}
+                          {report.screenshots.map((ss, idx) => {
+                            const imgUrl = ss.startsWith('http') ? ss : `${BASE_URL}${ss}`;
+                            return (
+                              <button 
+                                key={idx} 
+                                onClick={() => setViewImage(imgUrl)}
+                                className="btn-outline"
+                                type="button"
+                                style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem', cursor: 'pointer' }}
+                              >
+                                View {idx + 1}
+                              </button>
+                            );
+                          })}
                         </div>
                       </td>
-                      <td>
+                      <td style={{ textAlign: 'center' }}>
                         {report.status === 'pending' && (
                           <button 
                             onClick={() => handleDelete(report._id)} 
@@ -210,6 +214,30 @@ const UploadReport = () => {
           )}
         </div>
       </div>
+      
+      {/* Lightbox Modal */}
+      {viewImage && (
+        <div 
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+          }}
+          onClick={() => setViewImage(null)}
+        >
+          <div style={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}>
+            <button 
+              onClick={() => setViewImage(null)}
+              style={{
+                position: 'absolute', top: '-40px', right: '0', background: 'transparent',
+                border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer'
+              }}
+            >
+              &times;
+            </button>
+            <img src={viewImage} alt="Proof" style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px' }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

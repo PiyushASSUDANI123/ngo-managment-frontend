@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import API from '../../api/axios';
 import { toast } from 'react-toastify';
-import { HiOutlinePlus, HiOutlineDocumentDownload, HiOutlinePencil, HiOutlineTrash, HiOutlineX, HiOutlineSearch } from 'react-icons/hi';
+import { HiOutlinePlus, HiOutlineDocumentDownload, HiOutlinePencil, HiOutlineTrash, HiOutlineX, HiOutlineSearch, HiOutlineCheck } from 'react-icons/hi';
 import ExportButtons from '../../components/ExportButtons';
+import { BASE_URL } from '../../utils/config';
 
 const Funding = () => {
   const [donations, setDonations] = useState([]);
@@ -11,9 +12,10 @@ const Funding = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingDonation, setEditingDonation] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewImage, setViewImage] = useState(null);
   const [formData, setFormData] = useState({
     donorName: '', email: '', phone: '', address: '', city: '', state: '',
-    amount: '', date: new Date().toISOString().split('T')[0], purpose: '', notes: ''
+    amount: '', date: new Date().toISOString().split('T')[0], purpose: '', notes: '', utrNumber: ''
   });
 
   useEffect(() => {
@@ -64,7 +66,8 @@ const Funding = () => {
       amount: donation.amount.toString(),
       date: donation.date ? donation.date.split('T')[0] : '',
       purpose: donation.purpose || '',
-      notes: donation.notes || ''
+      notes: donation.notes || '',
+      utrNumber: donation.utrNumber || ''
     });
     setShowModal(true);
   };
@@ -77,6 +80,16 @@ const Funding = () => {
       fetchDonations();
     } catch (error) {
       toast.error('Failed to delete');
+    }
+  };
+
+  const handleVerify = async (id) => {
+    try {
+      await API.put(`/donations/${id}`, { status: 'completed' });
+      toast.success('Donation verified successfully');
+      fetchDonations();
+    } catch (error) {
+      toast.error('Failed to verify donation');
     }
   };
 
@@ -108,7 +121,7 @@ const Funding = () => {
   const resetForm = () => {
     setFormData({
       donorName: '', email: '', phone: '', address: '', city: '', state: '',
-      amount: '', date: new Date().toISOString().split('T')[0], purpose: '', notes: ''
+      amount: '', date: new Date().toISOString().split('T')[0], purpose: '', notes: '', utrNumber: ''
     });
   };
 
@@ -168,6 +181,7 @@ const Funding = () => {
                 <th>Contact</th>
                 <th>Amount</th>
                 <th>Status</th>
+                <th>Payment Proof</th>
                 <th>Date</th>
                 <th>Purpose</th>
                 <th>Actions</th>
@@ -186,18 +200,45 @@ const Funding = () => {
                   </td>
                   <td><span className="amount-badge">₹{d.amount.toLocaleString('en-IN')}</span></td>
                   <td>
-                    <span style={{
-                      padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
-                      background: d.status === 'completed' ? '#D1FAE5' : (d.status === 'partial' ? '#FEF3C7' : '#F3F4F6'),
-                      color: d.status === 'completed' ? '#065F46' : (d.status === 'partial' ? '#92400E' : '#374151')
-                    }}>
-                      {d.status ? d.status.toUpperCase() : 'COMPLETED'}
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-start' }}>
+                      <span style={{
+                        padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold',
+                        background: d.status === 'completed' ? '#D1FAE5' : (d.status === 'pending' ? '#FEF3C7' : '#F3F4F6'),
+                        color: d.status === 'completed' ? '#065F46' : (d.status === 'pending' ? '#92400E' : '#374151')
+                      }}>
+                        {d.status ? d.status.toUpperCase() : 'COMPLETED'}
+                      </span>
+                      <span style={{
+                        padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem',
+                        background: d.source === 'Website' ? '#E0E7FF' : '#F1F5F9',
+                        color: d.source === 'Website' ? '#4338CA' : '#475569'
+                      }}>
+                        {d.source || 'Manual'}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    {d.utrNumber && <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>UTR: {d.utrNumber}</div>}
+                    {d.screenshot && (
+                      <button 
+                        onClick={() => setViewImage(d.screenshot.startsWith('http') ? d.screenshot : `${BASE_URL}${d.screenshot}`)}
+                        className="btn-outline"
+                        style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem', marginTop: '0.25rem' }}
+                      >
+                        View Proof
+                      </button>
+                    )}
+                    {!d.utrNumber && !d.screenshot && <span style={{ color: 'var(--text-muted)' }}>No</span>}
                   </td>
                   <td>{new Date(d.date).toLocaleDateString('en-IN')}</td>
                   <td>{d.purpose || '-'}</td>
                   <td>
                     <div className="action-btns">
+                      {d.status === 'pending' && (
+                        <button className="icon-btn" style={{color: '#D97706'}} onClick={() => handleVerify(d._id)} title="Verify Donation">
+                          <HiOutlineCheck />
+                        </button>
+                      )}
                       <button className="icon-btn" style={{color: '#059669'}} onClick={() => handleCertificate(d._id)} title="Download Certificate">
                         <HiOutlineDocumentDownload />
                       </button>
@@ -282,6 +323,11 @@ const Funding = () => {
                 <textarea placeholder="Additional notes..." value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={2} />
               </div>
+              <div className="form-group">
+                <label>UTR Number (Optional)</label>
+                <input type="text" placeholder="Transaction ID" value={formData.utrNumber}
+                  onChange={(e) => setFormData({ ...formData, utrNumber: e.target.value })} />
+              </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">
@@ -289,6 +335,30 @@ const Funding = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Modal */}
+      {viewImage && (
+        <div 
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+          }}
+          onClick={() => setViewImage(null)}
+        >
+          <div style={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}>
+            <button 
+              onClick={() => setViewImage(null)}
+              style={{
+                position: 'absolute', top: '-40px', right: '0', background: 'transparent',
+                border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer'
+              }}
+            >
+              &times;
+            </button>
+            <img src={viewImage} alt="Payment Proof" style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px' }} />
           </div>
         </div>
       )}

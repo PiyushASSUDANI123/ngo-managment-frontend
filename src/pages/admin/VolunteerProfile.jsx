@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../../api/axios';
 import { toast } from 'react-toastify';
-import { HiOutlineArrowLeft, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineLockClosed, HiOutlineLockOpen } from 'react-icons/hi';
+import { HiOutlineArrowLeft, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineLockClosed, HiOutlineLockOpen, HiOutlineX, HiOutlineDownload } from 'react-icons/hi';
+import { BASE_URL } from '../../utils/config';
 
 const VolunteerProfile = () => {
   const { id } = useParams();
@@ -32,6 +33,38 @@ const VolunteerProfile = () => {
       navigate('/admin/volunteers');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteReport = async (reportId) => {
+    if (!window.confirm('Are you sure you want to delete this report?')) return;
+    try {
+      await API.delete(`/reports/${reportId}`);
+      toast.success('Report deleted successfully');
+      setReports(reports.filter(r => r._id !== reportId));
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete report');
+    }
+  };
+
+  const handleDownloadReport = async (report) => {
+    try {
+      for (let i = 0; i < report.screenshots.length; i++) {
+        const url = `${BASE_URL}${report.screenshots[i]}`;
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = `report_${report._id}_ss${i+1}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+      }
+      toast.success('Download started');
+    } catch (error) {
+      toast.error('Failed to download images');
     }
   };
 
@@ -101,19 +134,34 @@ const VolunteerProfile = () => {
               <p>No screenshots or reports added yet.</p>
             ) : (
               reports.map(report => (
-                <div key={report._id} className="card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <span className="badge">{new Date(report.date).toLocaleDateString()}</span>
+                <div key={report._id} className="card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px', position: 'relative' }}>
+                  <button 
+                    onClick={() => handleDeleteReport(report._id)} 
+                    style={{ position: 'absolute', top: '10px', right: '10px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--error)' }}
+                    title="Delete Report"
+                  >
+                    <HiOutlineX size={20} />
+                  </button>
+                  <button 
+                    onClick={() => handleDownloadReport(report)} 
+                    style={{ position: 'absolute', top: '10px', right: '40px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--primary)' }}
+                    title="Download Screenshots"
+                  >
+                    <HiOutlineDownload size={20} />
+                  </button>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', marginRight: '60px' }}>
+                    <span className="badge">{new Date(report.date || report.createdAt).toLocaleDateString()}</span>
                     <span className={`status-badge ${report.status}`}>{report.status}</span>
                   </div>
-                  <p><strong>Task:</strong> {report.taskType}</p>
+                  <p><strong>Task:</strong> {report.category?.name || report.taskType || 'Unknown'}</p>
                   <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '1rem' }}>{report.description}</p>
                   
                   {report.screenshots && report.screenshots.length > 0 && (
                     <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
                       {report.screenshots.map((img, i) => (
-                        <a key={i} href={`http://localhost:5000${img}`} target="_blank" rel="noreferrer">
-                          <img src={`http://localhost:5000${img}`} alt={`SS ${i+1}`} style={{ height: '100px', width: '100px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e2e8f0' }} />
+                        <a key={i} href={`${BASE_URL}${img}`}>
+                          <img src={`${BASE_URL}${img}`} alt={`SS ${i+1}`} style={{ height: '100px', width: '100px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e2e8f0' }} />
                         </a>
                       ))}
                     </div>

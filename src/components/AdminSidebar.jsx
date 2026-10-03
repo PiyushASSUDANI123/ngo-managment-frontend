@@ -13,7 +13,8 @@ import {
   HiOutlineBell,
   HiOutlineLogout,
   HiOutlineCalendar,
-  HiOutlineGlobeAlt
+  HiOutlineGlobeAlt,
+  HiOutlineSpeakerphone
 } from 'react-icons/hi';
 
 const AdminSidebar = ({ isOpen, onClose }) => {
@@ -36,6 +37,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
     { path: '/admin/reports', icon: <HiOutlinePhotograph />, label: 'Daily Reports' },
     { path: '/admin/meetings', icon: <HiOutlineCalendar />, label: 'Meetings' },
     { path: '/admin/funding', icon: <HiOutlineCurrencyRupee />, label: 'Funding' },
+    { path: '/admin/shoutouts', icon: <HiOutlineSpeakerphone />, label: 'Funders Shoutout' },
     { path: '/admin/notifications', icon: <HiOutlineBell />, label: 'Announcements' },
     { path: '/admin/website', icon: <HiOutlineGlobeAlt />, label: 'Website Mgmt' },
     { path: '/admin/settings', icon: <HiOutlineCog />, label: 'Settings' }
